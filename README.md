@@ -31,7 +31,7 @@ Human tracking
 
 ```workon cv```
 
-## Install python3 and Numpy on virtualenv
+## Install python3 and Numpy on virtualenv (SKIP)
 ```sudo apt-get install python3```
 
 ```pip3 install numpy```
