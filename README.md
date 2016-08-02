@@ -53,7 +53,7 @@ Human tracking
 	-D CMAKE_INSTALL_PREFIX=/usr/local \
 	-D INSTALL_C_EXAMPLES=OFF \
 	-D INSTALL_PYTHON_EXAMPLES=ON \
-	-D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
+	-D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules ~/opencv\
 	-D BUILD_EXAMPLES=ON ..```
 
 ```make -j4```
