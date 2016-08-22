@@ -220,9 +220,54 @@ def calculateAffinityMatrixAndDraw(bestImage, inliersDataBase, inliersWebCam, im
     dreal = (int(d[0]/d[2]), int(d[1]/d[2]))
     centroreal = (int(centro[0]/centro[2]), int(centro[1]/centro[2]))
     
+
+    #height = imgout.shape[0]
+    #width = imgout.shape[1]
+
+    #if areal[0]<0:
+     #   areal = (0, areal[1])
+    #elif areal[0]> width:
+     #   areal = (width, areal[1])
+
+    #if creal[0]<0:
+     #   creal = (0, creal[1])
+    #elif creal[0]> width:
+     #   creal = (width, creal[1])
+
+    #if areal[1]<0:
+     #   areal = (areal[0], 0)
+    #elif areal[1]> height:
+     #   areal = (areal[0], height)
+
+    #if creal[1]<0:
+     #   creal = (creal[0], 0)
+    #elif creal[1]> height:
+     #   creal = (creal[0], height)
+
+
+    #print(areal,breal,creal,dreal)
+
+
+    #if areal[1] >= creal[1] and areal[0] >= creal[0]:
+     #   imgshow = imgout[creal[1]:areal[1], creal[0]:areal[0]]
+    #if areal[1] <= creal[1] and areal[0] > creal[0]:
+     #   imgshow = imgout[areal[1]:creal[1], creal[0]:areal[0]]
+    #if areal[1] < creal[1] and areal[0] <= creal[0]:
+     #   imgshow = imgout[areal[1]:creal[1], areal[0]:creal[0]]
+    #if areal[1] > creal[1] and areal[0] < creal[0]:
+     #   imgshow = imgout[creal[1]:areal[1], areal[0]:creal[0]]
+    
+    
+    #cv2.imshow('Test', imgshow)
+    #cv2.imwrite("modelos/CRYSIS"+ str(areal[1])+".jpg",imgshow)
+
     #A Paints the polygon and the file name of the image in the center of the polygon
     points = np.array([areal, breal, creal, dreal], np.int32)
-    cv2.polylines(imgout, np.int32([points]),1, (255,255,255), thickness=2)
+    cv2.polylines(imgout, np.int32([points]),1, (0,255,255), thickness=2)
     utilscv.draw_str(imgout, centroreal, bestImage.nameFile.upper())
+    
+    
     #A Displays the detected object in a window part
     cv2.imshow('ImageDetector', bestImage.imageBinary)
+    
+

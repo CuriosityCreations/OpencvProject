@@ -20,26 +20,37 @@ if __name__ == '__main__':
 
     cv2.namedWindow('Features')
     cv2.namedWindow('ImageDetector')
+    #cv2.namedWindow('Test')
 
     #Selecting the method for computing features
     #1, 3, 4 fail now
-    cv2.createTrackbar('method', 'Features', 0, 4, nothing)
+    cv2.createTrackbar('method', 'Features', 2, 4, nothing)
     #Playback error to calculate inliers with RANSAC
-    cv2.createTrackbar('projer', 'Features', 5, 10, nothing)
+    cv2.createTrackbar('projer', 'Features', 10, 10, nothing)
     #Inliers minimum number to indicate that it has recognized an object
-    cv2.createTrackbar('inliers', 'Features', 20, 50, nothing)
+    cv2.createTrackbar('inliers', 'Features', 0, 50, nothing)
     #Trackbar to indicate whether the features are painted or not
     cv2.createTrackbar('drawKP', 'Features', 0, 1, nothing)
 
     # Opening video source
+    
     if len(sys.argv) > 1:
         strsource = sys.argv[1]
     else:
         strsource = '0:400:300'  # Simple opening of the zero camera without scaling
+    
+    scale = 1
 
     splitstr = strsource.split(':')
-    Videonum, Width, Height = [int(i) for i in splitstr]
-    cap = cv2.VideoCapture('inputcar.avi')
+    if len(splitstr) > 1:
+        Videonum, Width, Height = [int(i) for i in splitstr]
+        
+    else :
+        Videonum = int(strsource)
+        scale = 0
+        
+    cap = cv2.VideoCapture(Videonum)
+    
 
     paused = False
     methodstr = 'None'
@@ -51,7 +62,8 @@ if __name__ == '__main__':
         # Reading input frame and interface parameters:
         if not paused:
             ret, frame = cap.read()
-            frame = cv2.resize(frame, (Width, Height))
+            if scale:
+              frame = cv2.resize(frame, (Width, Height))
         if frame is None:
             print('End of video input')
             break
