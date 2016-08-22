@@ -28,10 +28,12 @@ if __name__ == '__main__':
 
         # Bitwise-AND mask and original image
         imgRes = cv2.bitwise_and(frame,frame, mask=Colormask)
+
+        # Covert to 1 channel image for contours
         imgRes = cv2.cvtColor(imgRes, cv2.COLOR_BGR2GRAY)
 
-        thresh = cv2.threshold(imgRes, 25, 255, cv2.THRESH_BINARY)[1]
-        thresh = cv2.dilate(thresh, None, iterations=5)
+        #thresh = cv2.threshold(imgRes, 25, 255, cv2.THRESH_BINARY)[1]
+        thresh = cv2.dilate(imgRes, None, iterations=8)
         im2, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
         for cnt in contours:
