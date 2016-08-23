@@ -5,50 +5,79 @@ import numpy as np
 import sys
 import time
 
-camera = cv2.VideoCapture("inputcar.avi")
 
 
 if __name__ == '__main__':
-    #MQTT Connect
-    #Color Tracking
-    while 1:
-        ok, frame = camera.read()
-        if not ok:
-            break
-        #cimg = frame[20:100, 40:100]
 
-        imgHSV = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        
-        # define range of blue color in HSV
-        lower_blue = np.array([0,130,130])
-        upper_blue = np.array([5,255,255])
+  #MQTT + GPIO
+  GPIO = 1
+  #dual camera
+  camera1 = cv2.VideoCapture('inputcar.avi')
+  camera2 = cv2.VideoCapture('inputcar.avi')
+  hogfound = False
+  init_once = False
 
-        # Threshold the HSV image to get only blue colors
-        Colormask = cv2.inRange(imgHSV, lower_blue, upper_blue)
+  while(GPIO):
+      #Depth Map
+      okL, frameL = camera1.read()
+      okR, frameR = camera2.read()
+     
+      if not (okL and okR):
+          break
+      _frameL = cv2.cvtColor(frameL, cv2.COLOR_BGR2GRAY)
+      _frameR = cv2.cvtColor(frameR, cv2.COLOR_BGR2GRAY)
 
-        # Bitwise-AND mask and original image
-        imgRes = cv2.bitwise_and(frame,frame, mask=Colormask)
+      active = False
+      disparity = []
+      if okL and okR:
+          active = True
+          stereo = cv2.StereoBM_create(numDisparities=16, blockSize=15)
+          disparity = stereo.compute(_frameL,_frameR)
+          disparity = cv2.GaussianBlur(disparity, (5, 5), 0)
+          #_disparity= cv2.cvtColor(disparity, cv2.COLOR_GRAY2BGR)
 
-        # Covert to 1 channel image for contours
-        imgRes = cv2.cvtColor(imgRes, cv2.COLOR_BGR2GRAY)
+      found = []
+      if not active:
+          print("fail to initialize dual camera")
+          break
+      else:
+          #HOG Locate
+          hog = cv2.HOGDescriptor()
+          hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+          found,w=hog.detectMultiScale(frameL, winStride=(8,8), padding=(32,32), scale=1.05)
+          if (len(found) > 0):
+              hogfound = True
+              print(len(found))
+              for (x,y,w,h) in found:
+                  cv2.rectangle(frameL,(x,y),(x+w,y+h),(255,0,0),2)
 
-        #thresh = cv2.threshold(imgRes, 25, 255, cv2.THRESH_BINARY)[1]
-        thresh = cv2.dilate(imgRes, None, iterations=8)
-        im2, contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+      bbox = []
+      if hogfound and not init_once:
+          #Track the man in center
+          for (x,y,w,h) in found:
+              if x > camera1.get(3)/3 and x < camera1.get(3)* 2/3:
+                  bbox = (x,y,w,h)
+                  break
+              else:
+                  hogfound = False
+      #KCF Tracking
+      tracker = cv2.Tracker_create("KCF")
+      if hogfound and not init_once:
+          okT = tracker.init(disparity, bbox)
+          init_once = True
 
-        number = 0;
-        for cnt in contours:
-          x,y,w,h = cv2.boundingRect(cnt)
-          cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
-          area = cv2.contourArea(cnt)
-          print("area = %4d, number = %d"%(area,number))
-          number+=1
-       
-        cv2.imshow('frame',frame)
-        #cv2.imshow('res',imgRes)
-        k = cv2.waitKey(5) & 0xFF
-        if k == 27:
-            break
-    cv2.destroyAllWindows()
-    #KCF
+      ok, newbox = tracker.update(disparity)
+      if ok:
+         p1 = (int(newbox[0]), int(newbox[1]))
+         p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
+         cv2.rectangle(disparity, p1, p2, (200,0,0),3)
+
+      cv2.imshow('frame',disparity)
+      #cv2.imshow('res',imgRes)
+      k = cv2.waitKey(5) & 0xFF
+      if k == 27:
+          break
+cv2.destroyAllWindows()     
+    
+    
     #Motor Conrol
