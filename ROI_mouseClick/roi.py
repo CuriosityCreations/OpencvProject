@@ -17,6 +17,7 @@ def click_and_crop(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         refPt = [(x, y)]
         cropping = True
+        ix, iy = (x, y)
     elif event == cv2.EVENT_MOUSEMOVE:
         if cropping == True:
             image = clone.copy()
@@ -51,7 +52,7 @@ while True:
     key = cv2.waitKey(1) & 0xFF
     # if the 'r' key is pressed, reset the cropping region
     if key == ord("r"):
-	image = clone.copy()
+        image = clone.copy()
     # if the 'c' key is pressed, break from the loop
     elif key == ord("c"):
         break
