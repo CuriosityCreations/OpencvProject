@@ -2,7 +2,7 @@
 
 ###Function:
 
-```tracker = cv2.Tracker_create("MIL")``` (KCF, TLD)
+```tracker = cv2.Tracker_create("MIL")``` (MIL, KCF, TLD, BOOSTING, MEDIANFLOW)
 
 
 ```ok = tracker.init(image, bbox)```
