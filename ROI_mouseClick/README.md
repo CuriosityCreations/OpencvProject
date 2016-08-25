@@ -5,3 +5,5 @@
 
 
 ```if event == cv2.EVENT_LBUTTONUP:```
+
+```if event == cv2.EVENT_MOUSEMOVE:```
