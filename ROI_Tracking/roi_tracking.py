@@ -6,18 +6,20 @@ import cv2
 # whether cropping is being performed or not
 refPt = []
 cropping = False
+lock = False
  
 def click_and_crop(event, x, y, flags, param):
     # grab references to the global variables
-    global refPt, cropping, ix,iy, image, clone
+    global refPt, cropping, lock, ix,iy, image, clone
 
     # if the left mouse button was clicked, record the starting
     # (x, y) coordinates and indicate that cropping is being
     # performed
     if event == cv2.EVENT_LBUTTONDOWN:
-        refPt = [(x, y)]
-        ix,iy = x,y
-        cropping = True
+        if not lock:
+          refPt = [(x, y)]
+          ix,iy = x,y
+          cropping = True
     elif event == cv2.EVENT_MOUSEMOVE:
         if cropping == True:
             image = clone.copy()
@@ -26,13 +28,15 @@ def click_and_crop(event, x, y, flags, param):
     elif event == cv2.EVENT_LBUTTONUP:
         # record the ending (x, y) coordinates and indicate that
         # the cropping operation is finished
-        refPt.append((x, y))
-        cropping = False
+        if cropping == True:
+            refPt.append((x, y))
+            cropping = False
+            lock = True
 
-        # draw a rectangle around the region of interest
-        cv2.rectangle(image, refPt[0], refPt[1], (0, 255, 0), 2)
-        #cv2.imshow("image", image)
-        #cv2.imwrite('roi.jpg', image)
+            # draw a rectangle around the region of interest
+            cv2.rectangle(image, refPt[0], refPt[1], (0, 255, 0), 2)
+            #cv2.imshow("image", image)
+            #cv2.imwrite('roi.jpg', image)
 
 # construct the argument parser and parse the arguments
 #ap = argparse.ArgumentParser()
@@ -58,11 +62,12 @@ while True:
  
 	# if the 'r' key is pressed, reset the cropping region
 	if key == ord("r"):
-		image = clone.copy()
+            image = clone.copy()
+            lock = False
  
 	# if the 'c' key is pressed, break from the loop
 	elif key == ord("c"):
-		break
+            break
  
 # if there are two reference points, then crop the region of interest
 # from teh image and display it
