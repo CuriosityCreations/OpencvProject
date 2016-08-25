@@ -47,7 +47,7 @@ ok, image=camera.read()
 clone = image.copy()
 cv2.namedWindow("image")
 cv2.setMouseCallback("image", click_and_crop)
-tracker = cv2.Tracker_create("MIL")
+tracker = cv2.Tracker_create("KCF")
 init_once = False
 
 # keep looping until the 'q' key is pressed
@@ -72,33 +72,28 @@ if len(refPt) == 2:
         #cv2.imshow("ROI", roi)
         #cv2.imwrite('ROI.jpg', roi)
    bbox = (refPt[0][0],refPt[0][1],refPt[1][0]-refPt[0][0],refPt[1][1]-refPt[0][1])
-   while camera.isOpened():
-     ok, image=camera.read()
-     #image=cv2.resize(image,(0,0),fx = 0.25, fy = 0.25)
-     if not ok:
-            print ('no image read')
-            break
+   while 1:
+       ok, image=camera.read()
+       #image=cv2.resi`ze(image,(0,0),fx = 0.25, fy = 0.25)
+       if not ok:
+           print ('no image read')
+           break
 
-     if not init_once:
+       if not init_once:
            ok = tracker.init(image, bbox)
            init_once = True
 
-     ok, newbox = tracker.update(image)
-     print (ok, newbox)
+       ok, newbox = tracker.update(image)
+       print (ok, newbox)
 
-     if ok:
-         p1 = (int(newbox[0]), int(newbox[1]))
-         p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
-         cv2.rectangle(image, p1, p2, (200,0,0),3)
+       if ok:
+           p1 = (int(newbox[0]), int(newbox[1]))
+           p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
+           cv2.rectangle(image, p1, p2, (200,0,0),3)
 
+       cv2.imshow("image", image)
+       k = cv2.waitKey(1) & 0xff
+       if k == 27 : break # esc pressed
 
-     cv2.imshow("image", image)
-     k = cv2.waitKey(1) & 0xff
-     if k == 27 : break # esc pressed
-          
-            #cv2.imshow("ROI", image)
-
-cv2.waitKey(0)
- 
 # close all open windows
 cv2.destroyAllWindows()
