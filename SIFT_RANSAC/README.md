@@ -8,5 +8,5 @@
 
 ```python3 p4-objrecogn.py video.avi```
 
-# flann issue fix:
-```https://github.com/opencv/opencv/pull/6009/files```
+# Flann Issue Fix:
+https://github.com/opencv/opencv/pull/6009/files
