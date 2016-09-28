@@ -1,0 +1,27 @@
+    sudo apt-get install nvidia-cuda-toolkit
+    sudo apt-get install nvidia-cuda-361-updates
+    sudo apt-get install nvidia-nsight
+    sudo apt-get install nvidia-profiler
+    sudo apt-get install libcupti-dev zlib1g-dev
+
+    # Put symlinks in /usr/local/cuda
+    sudo mkdir /usr/local/cuda
+    cd /usr/local/cuda
+    sudo ln -s  /usr/lib/x86_64-linux-gnu/ lib64
+    sudo ln -s  /usr/include/ include
+    sudo ln -s  /usr/bin/ bin
+    sudo ln -s  /usr/lib/x86_64-linux-gnu/ nvvm
+    sudo mkdir -p extras/CUPTI
+    cd extras/CUPTI
+    sudo ln -s  /usr/lib/x86_64-linux-gnu/ lib64
+    sudo ln -s  /usr/include/ include
+
+    # Install cudann
+    #http://askubuntu.com/questions/767269/how-can-i-install-cudnn-on-ubuntu-16-04
+    # Download cudann as detailed above and extract
+    cd ~/Downloads/cuda
+    sudo cp include/cudnn.h /usr/include
+    sudo cp lib64/libcudnn* /usr/lib/x86_64-linux-gnu/
+    sudo chmod a+r /usr/lib/x86_64-linux-gnu/libcudnn*
+
+    # ... Install TensorFlow from source ...

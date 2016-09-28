@@ -1,0 +1,30 @@
+
+# IN ~/.bashrc add to the last row :
+
+export PATH=/usr/local/cuda/bin:${PATH}
+
+if [[ "${LD_LIBRARY_PATH}" != "" ]]
+then
+  export LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
+else
+  export LD_LIBRARY_PATH=/usr/local/cuda/lib64
+fi
+
+
+# For ROS
+
+source /opt/ros/kinetic/setup.bash
+
+
+# CMAKE for CUDA
+
+cmake -D WITH_CUDA=ON \
+    -D ENABLE_FAST_MATH=1 \
+    -D CUDA_FAST_MATH=1 \
+    -D INSTALL_C_EXAMPLES=OFF \
+    -D WITH_CUBLAS=1 \
+    -D INSTALL_PYTHON_EXAMPLES=ON \
+    -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules ~/opencv \
+    -D BUILD_EXAMPLES=ON \
+    -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local ..
